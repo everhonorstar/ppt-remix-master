@@ -13,6 +13,8 @@
 
 别人拿到仓库后，可以按下面步骤安装：
 
+macOS / Linux:
+
 ```bash
 git clone https://github.com/everhonorstar/ppt-remix-master.git
 cd ppt-remix-master
@@ -24,6 +26,21 @@ cp skill/SKILL.md ~/.codex/skills/ppt-remix-master/SKILL.md
 
 cp .env.example .env
 cp config.yaml.example config.yaml
+```
+
+Windows PowerShell:
+
+```powershell
+git clone https://github.com/everhonorstar/ppt-remix-master.git
+cd ppt-remix-master
+
+py -3 -m pip install -e ./cli
+
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.codex\skills\ppt-remix-master"
+Copy-Item skill\SKILL.md "$env:USERPROFILE\.codex\skills\ppt-remix-master\SKILL.md"
+
+Copy-Item .env.example .env
+Copy-Item config.yaml.example config.yaml
 ```
 
 然后编辑 `.env` 和 `config.yaml`，填入自己的模型供应商、模型名和 API Key。完成后重启 Codex，即可使用 `ppt-remix-master` skill。
@@ -45,12 +62,32 @@ cp config.yaml.example config.yaml
 
 ## 快速开始
 
+macOS / Linux:
+
 ```bash
 cd ppt-remix-master/cli
 python3 -m ppt_remix run ../examples/demo.pptx --out ../jobs --config ../config.yaml.example
 ```
 
+Windows PowerShell:
+
+```powershell
+cd ppt-remix-master\cli
+py -3 -m ppt_remix run ..\examples\demo.pptx --out ..\jobs --config ..\config.yaml.example
+```
+
 `run` 默认只生成审核预览，不会自动组装最终 PPTX。用户明确确认后，再单独执行 `assemble --approved`。没有真实模型 key 时，`local_mock` 会复制原图片并做简单文本替换，用来验证 PPTX 处理链路。
+
+## Windows 使用说明
+
+这个项目的 CLI 使用 Python 标准库、`requests`、`PyYAML` 和 `Pillow`，没有依赖 macOS 专用功能，适合在 Windows 上安装使用。Windows 用户建议在 PowerShell 中执行命令，并注意：
+
+- 使用 `py -3` 或 `python` 替代 `python3`
+- 使用 `New-Item` 替代 `mkdir -p`
+- 使用 `Copy-Item` 替代 `cp`
+- 路径分隔符可以使用 `\`，例如 `..\jobs`
+- 如果 n8n 也跑在 Windows，Execute Command 节点里的命令和路径也要改成 PowerShell/Windows 格式
+- 老旧 Windows 环境可能受路径长度限制影响，建议把项目放在较短路径下，例如 `C:\tools\ppt-remix-master`
 
 ## 批次图片缓存
 

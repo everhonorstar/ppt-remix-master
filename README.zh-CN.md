@@ -22,6 +22,8 @@ PPT Remix Master 是一个本地优先的 PPTX 二创工具。它可以把 PPTX 
 
 ## 安装
 
+macOS / Linux：
+
 ```bash
 git clone https://github.com/everhonorstar/ppt-remix-master.git
 cd ppt-remix-master
@@ -35,15 +37,35 @@ mkdir -p ~/.codex/skills/ppt-remix-master
 cp skill/SKILL.md ~/.codex/skills/ppt-remix-master/SKILL.md
 ```
 
+Windows PowerShell：
+
+```powershell
+git clone https://github.com/everhonorstar/ppt-remix-master.git
+cd ppt-remix-master
+py -3 -m pip install -e ./cli
+
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.codex\skills\ppt-remix-master"
+Copy-Item skill\SKILL.md "$env:USERPROFILE\.codex\skills\ppt-remix-master\SKILL.md"
+```
+
 然后重启 Codex。
 
 ## 配置
 
 复制配置模板：
 
+macOS / Linux：
+
 ```bash
 cp .env.example .env
 cp config.yaml.example config.yaml
+```
+
+Windows PowerShell：
+
+```powershell
+Copy-Item .env.example .env
+Copy-Item config.yaml.example config.yaml
 ```
 
 `.env` 里填写自己的 key：
@@ -64,9 +86,18 @@ TEXT_API_KEY=你的文字改写模型key
 
 ## 快速开始
 
+macOS / Linux：
+
 ```bash
 cd cli
 python3 -m ppt_remix run ../examples/demo.pptx --out ../jobs --config ../config.yaml.example
+```
+
+Windows PowerShell：
+
+```powershell
+cd cli
+py -3 -m ppt_remix run ..\examples\demo.pptx --out ..\jobs --config ..\config.yaml.example
 ```
 
 `run` 命令会执行：
@@ -96,6 +127,19 @@ python3 -m ppt_remix assemble ../jobs/demo --approved
 ```bash
 jobs/demo/output/remixed.pptx
 ```
+
+## Windows 使用说明
+
+这个项目的 CLI 使用 Python 标准库、`requests`、`PyYAML` 和 `Pillow`，没有依赖 macOS 专用功能，适合 Windows 使用。Windows 用户建议在 PowerShell 中执行命令。
+
+需要注意：
+
+- 使用 `py -3` 或 `python` 替代 `python3`
+- 使用 `New-Item` 替代 `mkdir -p`
+- 使用 `Copy-Item` 替代 `cp`
+- 路径可以使用 `\`，例如 `..\jobs`
+- 如果 n8n 也跑在 Windows，Execute Command 节点里的命令和路径也要改成 Windows 格式
+- 老旧 Windows 环境可能受路径长度限制影响，建议把项目放在较短路径下，例如 `C:\tools\ppt-remix-master`
 
 ## 常用命令
 
