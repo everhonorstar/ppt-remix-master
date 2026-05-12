@@ -1,5 +1,7 @@
 # PPT Remix Master
 
+[中文版说明](README.zh-CN.md)
+
 本地优先的 PPTX 二创工具。核心流程由 CLI 负责，n8n 负责上传、审核、通知和编排。
 
 ## 分享/安装给其他人
