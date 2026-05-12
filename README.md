@@ -14,7 +14,7 @@
 别人拿到仓库后，可以按下面步骤安装：
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/everhonorstar/ppt-remix-master.git
 cd ppt-remix-master
 
 python3 -m pip install -e ./cli
