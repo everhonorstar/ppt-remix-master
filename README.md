@@ -44,7 +44,7 @@ cp config.yaml.example config.yaml
 ## 快速开始
 
 ```bash
-cd /Users/honor/ppt-remix-master/cli
+cd ppt-remix-master/cli
 python3 -m ppt_remix run ../examples/demo.pptx --out ../jobs --config ../config.yaml.example
 ```
 
@@ -85,7 +85,7 @@ jobs/cache/我是值日生/
 把真实 key 放到项目根目录 `.env`，CLI 会自动加载：
 
 ```bash
-cp /Users/honor/ppt-remix-master/.env.example /Users/honor/ppt-remix-master/.env
+cp .env.example .env
 ```
 
 `.env` 内容：
@@ -99,7 +99,7 @@ TEXT_API_KEY=你的文字改写模型key
 如需指定其他 env 文件：
 
 ```bash
-python3 -m ppt_remix --env-file /path/to/.env test-provider vision --config /Users/honor/ppt-remix-master/config.yaml
+python3 -m ppt_remix --env-file /path/to/.env test-provider vision --config config.yaml
 ```
 
 Gemini vision 示例：
@@ -117,8 +117,8 @@ vision_provider:
 测试 vision 连通性：
 
 ```bash
-cd /Users/honor/ppt-remix-master/cli
-python3 -m ppt_remix test-provider vision --config /Users/honor/ppt-remix-master/config.yaml
+cd ppt-remix-master/cli
+python3 -m ppt_remix test-provider vision --config ../config.yaml
 ```
 
 ## 常用命令
@@ -136,15 +136,15 @@ python3 -m ppt_remix assemble jobs/job_id --approved
 第一版面向自托管 n8n。导入 `n8n/ppt-remix-self-hosted.workflow.json` 后，需要在上传节点和 Execute Command 节点之间补一个“保存上传文件到本地路径”的节点，并设置：
 
 ```bash
-PPT_REMIX_ROOT=/Users/honor/ppt-remix-master
+PPT_REMIX_ROOT=/path/to/ppt-remix-master
 N8N_DEFAULT_BINARY_DATA_MODE=filesystem
 ```
 
 如果使用 n8n Cloud 或远程 n8n，可以在本机启动轻量 HTTP 服务：
 
 ```bash
-cd /Users/honor/ppt-remix-master/cli
-python3 -m ppt_remix server --root /Users/honor/ppt-remix-master --config /Users/honor/ppt-remix-master/config.yaml
+cd ppt-remix-master/cli
+python3 -m ppt_remix server --root .. --config ../config.yaml
 ```
 
 然后让 n8n 用 HTTP Request 调用：

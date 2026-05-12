@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import base64
-import imghdr
 import os
 import re
 import shutil
@@ -11,6 +10,7 @@ from typing import Any
 import requests
 
 from .config import ProviderConfig
+from .image_utils import image_kind
 
 
 class ProviderError(RuntimeError):
@@ -465,7 +465,7 @@ def _local_rewrite(text: str) -> str:
 
 
 def _mime_type(path: Path) -> str:
-    kind = imghdr.what(path)
+    kind = image_kind(path)
     if kind == "jpeg":
         return "image/jpeg"
     if kind == "png":

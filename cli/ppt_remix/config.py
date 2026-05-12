@@ -75,7 +75,7 @@ def find_default_env() -> Path | None:
     candidates = [
         Path.cwd() / ".env",
         Path.cwd().parent / ".env",
-        Path("/Users/honor/ppt-remix-master/.env"),
+        Path(__file__).resolve().parents[2] / ".env",
     ]
     for path in candidates:
         if path.exists():

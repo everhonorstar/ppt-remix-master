@@ -2,13 +2,12 @@ from __future__ import annotations
 
 import argparse
 import binascii
-import imghdr
 import struct
 from pathlib import Path
 
 from . import __version__
 from .config import load_config, load_dotenv
-from .image_utils import image_size
+from .image_utils import image_kind, image_size
 from .server import serve
 from .workflow import assemble, prepare, preview, remix_images, rewrite_text, run
 
@@ -138,7 +137,7 @@ def _test_png_bytes() -> bytes:
 
 
 def _validate_image_file(path: Path) -> dict[str, int | str]:
-    kind = imghdr.what(path)
+    kind = image_kind(path)
     if not kind:
         raise ValueError(f"Image provider output is not a recognized image: {path}")
     width, height = image_size(path)

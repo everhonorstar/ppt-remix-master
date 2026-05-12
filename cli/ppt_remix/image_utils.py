@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import imghdr
 import struct
 from pathlib import Path
 
@@ -8,8 +7,28 @@ from pathlib import Path
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tif", ".tiff", ".webp"}
 
 
+def image_kind(path: Path) -> str | None:
+    try:
+        header = path.read_bytes()[:32]
+    except OSError:
+        return None
+    if header.startswith(b"\x89PNG\r\n\x1a\n"):
+        return "png"
+    if header.startswith(b"\xff\xd8\xff"):
+        return "jpeg"
+    if header.startswith((b"GIF87a", b"GIF89a")):
+        return "gif"
+    if header.startswith(b"RIFF") and header[8:12] == b"WEBP":
+        return "webp"
+    if header.startswith(b"BM"):
+        return "bmp"
+    if header.startswith((b"II*\x00", b"MM\x00*")):
+        return "tiff"
+    return None
+
+
 def image_size(path: Path) -> tuple[int | None, int | None]:
-    kind = imghdr.what(path)
+    kind = image_kind(path)
     try:
         if kind == "png":
             with path.open("rb") as fh:
