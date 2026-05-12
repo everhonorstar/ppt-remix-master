@@ -1,0 +1,22 @@
+# macOS / Python cache
+.DS_Store
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local environments and secrets
+.venv/
+.env
+.env.*
+!.env.example
+config.yaml
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Generated jobs and private source materials
+jobs/*
+!jobs/.gitkeep
+我是班级值日生/

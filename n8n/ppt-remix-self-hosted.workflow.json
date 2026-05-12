@@ -1,0 +1,126 @@
+{
+  "name": "PPT Remix Master - Self Hosted",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "ppt-remix/upload",
+        "httpMethod": "POST",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "upload-webhook",
+      "name": "Upload PPTX",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 280]
+    },
+    {
+      "parameters": {
+        "command": "python3 \"$PPT_REMIX_ROOT/cli/run_cli.py\" run \"$PPT_REMIX_INPUT\" --out \"$PPT_REMIX_ROOT/jobs\" --review --config \"$PPT_REMIX_ROOT/config.yaml\""
+      },
+      "id": "run-cli-preview",
+      "name": "Run PPT Remix Preview",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [520, 280],
+      "notes": "Before this node, save the uploaded binary file to PPT_REMIX_INPUT, for example /Users/honor/ppt-remix-master/jobs/{job_id}/input.pptx."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ { \"status\": \"preview_ready\", \"cliOutput\": $json.stdout } }",
+        "options": {}
+      },
+      "id": "preview-response",
+      "name": "Return Preview Status",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [800, 280]
+    },
+    {
+      "parameters": {
+        "path": "ppt-remix/approve",
+        "httpMethod": "POST",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "approve-webhook",
+      "name": "Approve Job",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [240, 560]
+    },
+    {
+      "parameters": {
+        "command": "python3 \"$PPT_REMIX_ROOT/cli/run_cli.py\" assemble \"$PPT_REMIX_JOB_DIR\" --approved"
+      },
+      "id": "assemble-cli",
+      "name": "Assemble Final PPTX",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [520, 560],
+      "notes": "Set PPT_REMIX_JOB_DIR to the approved job directory before this node."
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ { \"status\": \"assembled\", \"cliOutput\": $json.stdout } }",
+        "options": {}
+      },
+      "id": "assemble-response",
+      "name": "Return Final Status",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [800, 560]
+    }
+  ],
+  "connections": {
+    "Upload PPTX": {
+      "main": [
+        [
+          {
+            "node": "Run PPT Remix Preview",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run PPT Remix Preview": {
+      "main": [
+        [
+          {
+            "node": "Return Preview Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approve Job": {
+      "main": [
+        [
+          {
+            "node": "Assemble Final PPTX",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assemble Final PPTX": {
+      "main": [
+        [
+          {
+            "node": "Return Final Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

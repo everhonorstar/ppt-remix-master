@@ -1,0 +1,35 @@
+vision_provider:
+  provider: local_mock
+  base_url: ""
+  api_key: ""
+  api_key_env: VISION_API_KEY
+  model: ""
+  timeout: 120
+  retry: 2
+  extra_options: {}
+
+image_provider:
+  provider: local_mock
+  base_url: ""
+  api_key: ""
+  api_key_env: IMAGE_API_KEY
+  model: ""
+  timeout: 300
+  retry: 2
+  extra_options: {}
+
+text_provider:
+  provider: local_mock
+  base_url: ""
+  api_key: ""
+  api_key_env: TEXT_API_KEY
+  model: ""
+  timeout: 120
+  retry: 2
+  extra_options:
+    temperature: 0.6
+
+skip_small_images: true
+min_image_width: 64
+min_image_height: 64
+text_length_tolerance: 0.15
