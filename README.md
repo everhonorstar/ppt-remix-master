@@ -78,6 +78,8 @@ py -3 -m ppt_remix run ..\examples\demo.pptx --out ..\jobs --config ..\config.ya
 
 `run` 默认只生成审核预览，不会自动组装最终 PPTX。用户明确确认后，再单独执行 `assemble --approved`。没有真实模型 key 时，`local_mock` 会复制原图片并做简单文本替换，用来验证 PPTX 处理链路。
 
+最终 PPTX 会按源文件名命名：源文件名去掉 `.pptx` 后追加 `_remixed.pptx`。例如 `demo.pptx` 输出 `demo_remixed.pptx`，`我是班级值日生3.pptx` 输出 `我是班级值日生3_remixed.pptx`。
+
 ## Windows 使用说明
 
 这个项目的 CLI 使用 Python 标准库、`requests`、`PyYAML` 和 `Pillow`，没有依赖 macOS 专用功能，适合在 Windows 上安装使用。Windows 用户建议在 PowerShell 中执行命令，并注意：

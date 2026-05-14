@@ -31,6 +31,7 @@ Use the bundled CLI for PPTX remix work. The CLI edits PPTX packages in place by
    ```bash
    ppt-remix assemble jobs/job_id --approved
    ```
+   The assembled file must be named from the source PPTX stem plus `_remixed`, for example `jobs/job_id/output/input_remixed.pptx`.
 
 For a single local run, `run` always stops at preview and never assembles:
 
@@ -76,3 +77,5 @@ On image remix, check only this cache for the current cache name. If `prompt.jso
 ## Review
 
 Default to producing `preview/index.html`, `preview/summary.json`, `image_manifest.json`, and `text_manifest.json`, then stop. Assemble only after the user gives an explicit confirmation such as “确认”, “同意”, or “通过”, and then run `ppt-remix assemble jobs/job_id --approved`.
+
+Final PPTX naming standard: assemble outputs `output/<source_filename_stem>_remixed.pptx`; preserve the original source filename stem, including Chinese characters and part numbers.

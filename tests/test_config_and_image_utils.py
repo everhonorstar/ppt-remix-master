@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT / "cli"))
 
 from ppt_remix.config import find_default_env  # noqa: E402
 from ppt_remix.image_utils import image_kind, image_size  # noqa: E402
+from ppt_remix.pptx_ops import _remixed_filename  # noqa: E402
 
 
 class ConfigAndImageUtilsTests(unittest.TestCase):
@@ -42,6 +43,19 @@ class ConfigAndImageUtilsTests(unittest.TestCase):
             self.assertEqual(image_size(png), (12, 8))
             self.assertEqual(image_kind(jpg), "jpeg")
             self.assertEqual(image_size(jpg), (9, 7))
+
+    def test_remixed_filename_uses_source_filename_stem(self) -> None:
+        job_dir = Path("/tmp/jobs/我是班级值日生3")
+
+        self.assertEqual(
+            _remixed_filename(job_dir, {"source_filename": "我是班级值日生3.pptx"}),
+            "我是班级值日生3_remixed.pptx",
+        )
+
+    def test_remixed_filename_falls_back_to_job_name(self) -> None:
+        job_dir = Path("/tmp/jobs/demo")
+
+        self.assertEqual(_remixed_filename(job_dir, {}), "demo_remixed.pptx")
 
 
 if __name__ == "__main__":

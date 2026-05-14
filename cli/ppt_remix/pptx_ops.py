@@ -30,6 +30,11 @@ def ensure_pptx(input_path: Path) -> None:
 def unpack_pptx(input_path: Path, job_dir: Path) -> Path:
     ensure_pptx(input_path)
     job_dir.mkdir(parents=True, exist_ok=True)
+    status = read_json(job_dir / "job_status.json", {})
+    if input_path.name != "input.pptx":
+        status["source_filename"] = input_path.name
+        status["source_stem"] = input_path.stem
+        write_json(job_dir / "job_status.json", status)
     source = job_dir / "input.pptx"
     if input_path.resolve() != source.resolve():
         shutil.copy2(input_path, source)
@@ -50,7 +55,9 @@ def build_manifests(job_dir: Path, config: RemixConfig) -> None:
     texts = _build_text_manifest(job_dir, root)
     write_json(job_dir / "image_manifest.json", images)
     write_json(job_dir / "text_manifest.json", texts)
-    write_json(job_dir / "job_status.json", {"stage": "prepared", "image_count": len(images), "text_count": len(texts)})
+    status = read_json(job_dir / "job_status.json", {})
+    status.update({"stage": "prepared", "image_count": len(images), "text_count": len(texts)})
+    write_json(job_dir / "job_status.json", status)
 
 
 def _build_image_manifest(job_dir: Path, root: Path, config: RemixConfig) -> list[dict]:
@@ -185,13 +192,23 @@ def assemble_pptx(job_dir: Path, approved: bool) -> Path:
     _apply_rewritten_text(job_dir, root)
     output_dir = job_dir / "output"
     output_dir.mkdir(parents=True, exist_ok=True)
-    output = output_dir / "remixed.pptx"
-    _zip_dir(root, output)
     status = read_json(job_dir / "job_status.json", {})
+    output = output_dir / _remixed_filename(job_dir, status)
+    _zip_dir(root, output)
     status["stage"] = "assembled"
     status["output_pptx"] = str(output)
     write_json(job_dir / "job_status.json", status)
     return output
+
+
+def _remixed_filename(job_dir: Path, status: dict) -> str:
+    source_filename = status.get("source_filename")
+    if isinstance(source_filename, str) and source_filename.strip():
+        source_stem = Path(source_filename).stem.strip()
+    else:
+        source_stem = job_dir.name.strip()
+    source_stem = source_stem or "remixed"
+    return f"{source_stem}_remixed.pptx"
 
 
 def _apply_generated_images(job_dir: Path, root: Path) -> None:

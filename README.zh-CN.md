@@ -125,8 +125,10 @@ python3 -m ppt_remix assemble ../jobs/demo --approved
 输出文件通常在：
 
 ```bash
-jobs/demo/output/remixed.pptx
+jobs/demo/output/demo_remixed.pptx
 ```
+
+最终 PPTX 命名规则为：源文件名去掉 `.pptx` 后追加 `_remixed.pptx`。例如 `我是班级值日生3.pptx` 会输出为 `我是班级值日生3_remixed.pptx`。
 
 ## Windows 使用说明
 
