@@ -76,6 +76,8 @@ class TransparentImageHandlingTests(unittest.TestCase):
             fixed = Image.open(output).convert("RGBA")
             self.assertEqual(fixed.size, (100, 100))
             self.assertEqual(fixed.getchannel("A").getbbox(), (20, 20, 80, 90))
+            self.assertFalse((root / ".output.png.tmp.png").exists())
+            self.assertEqual(sorted(path.name for path in root.iterdir()), ["output.png", "source.png"])
 
     def test_good_transparent_replacement_is_kept(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

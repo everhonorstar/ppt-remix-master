@@ -43,7 +43,7 @@ def stabilize_transparent_replacement(source_path: Path, output_path: Path, item
             strategy = "resize_preserve_generated_alpha"
         output = _clean_alpha_edges(output)
 
-    output.save(output_path)
+    _replace_output_image(output, output_path)
     result.update(
         {
             "action": action,
@@ -54,6 +54,16 @@ def stabilize_transparent_replacement(source_path: Path, output_path: Path, item
         }
     )
     return result
+
+
+def _replace_output_image(image, output_path: Path) -> None:
+    temp_path = output_path.with_name(f".{output_path.name}.tmp.png")
+    try:
+        image.save(temp_path)
+        temp_path.replace(output_path)
+    finally:
+        if temp_path.exists():
+            temp_path.unlink()
 
 
 def _transparent_replacement_issues(source, generated) -> list[str]:
