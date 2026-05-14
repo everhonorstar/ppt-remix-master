@@ -73,6 +73,7 @@ On image remix, check only this cache for the current cache name. If `prompt.jso
 - Scenes: mirror spatial direction when it makes sense, without breaking scene logic.
 - Text inside images: do not mirror readable text; avoid garbled generated text.
 - Output images must fit the source image's aspect ratio and replacement role.
+- Transparent cutout images must pass automatic quality stabilization after generation or cache restore. If a generated transparent image has wrong dimensions/aspect ratio, missing or suspicious alpha, checkerboard-like content, or unsafe coverage drift, replace it with an alpha-preserving safe remix derived from the source image and record the action in the image manifest `quality` field.
 
 ## Review
 

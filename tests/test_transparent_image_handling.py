@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "cli"))
 
 from ppt_remix.pptx_ops import _copy_image_preserving_alpha  # noqa: E402
+from ppt_remix.image_quality import stabilize_transparent_replacement  # noqa: E402
 
 
 class TransparentImageHandlingTests(unittest.TestCase):
@@ -58,6 +59,38 @@ class TransparentImageHandlingTests(unittest.TestCase):
             assert bbox is not None
             self.assertGreaterEqual(bbox[1], 12)
             self.assertLessEqual(bbox[3], 88)
+
+    def test_bad_transparent_replacement_falls_back_to_safe_source_remix(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "source.png"
+            output = root / "output.png"
+
+            _rgba_with_box(source, (100, 100), (20, 20, 80, 90), (255, 0, 0, 255))
+            _rgba_with_box(output, (100, 150), (20, 30, 80, 140), (0, 0, 255, 255))
+
+            result = stabilize_transparent_replacement(source, output, _transparent_item())
+
+            self.assertEqual(result["action"], "fallback")
+            self.assertIn("size_mismatch", result["issues"])
+            fixed = Image.open(output).convert("RGBA")
+            self.assertEqual(fixed.size, (100, 100))
+            self.assertEqual(fixed.getchannel("A").getbbox(), (20, 20, 80, 90))
+
+    def test_good_transparent_replacement_is_kept(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "source.png"
+            output = root / "output.png"
+
+            _rgba_with_box(source, (100, 100), (20, 20, 80, 90), (255, 0, 0, 255))
+            _rgba_with_box(output, (100, 100), (22, 18, 82, 88), (0, 0, 255, 255))
+
+            result = stabilize_transparent_replacement(source, output, _transparent_item())
+
+            self.assertEqual(result["action"], "accepted")
+            fixed = Image.open(output).convert("RGBA")
+            self.assertEqual(fixed.getchannel("A").getbbox(), (22, 18, 82, 88))
 
 
 def _transparent_item(**extra: object) -> dict[str, object]:

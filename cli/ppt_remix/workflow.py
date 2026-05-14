@@ -7,6 +7,7 @@ import shutil
 from pathlib import Path
 
 from .config import RemixConfig, load_config
+from .image_quality import stabilize_transparent_replacement
 from .json_io import read_json, write_json
 from .pptx_ops import assemble_pptx, build_manifests, unpack_pptx
 from .providers import ImageProvider, TextProvider, VisionProvider
@@ -55,6 +56,9 @@ def remix_images(job_dir: Path, concurrency: int = 3, config_path: Path | None =
             output = generated_dir / item["media_name"]
             cache_hit = _restore_cached_asset(cache_root, item, prompt_path, output)
             if cache_hit:
+                source = job_dir / item["exported_path"]
+                _stabilize_image_replacement(source, output, item)
+                _store_cached_asset(cache_root, item, prompt_path, output)
                 item["prompt_path"] = str(prompt_path.relative_to(job_dir))
                 item["replacement_path"] = str(output.relative_to(job_dir))
                 item["status"] = "cached"
@@ -65,6 +69,7 @@ def remix_images(job_dir: Path, concurrency: int = 3, config_path: Path | None =
             prompt = _build_remix_prompt(analysis, item)
             write_json(prompt_path, prompt)
             image.generate_image(prompt, source, output)
+            _stabilize_image_replacement(source, output, item)
             _store_cached_asset(cache_root, item, prompt_path, output)
             item["prompt_path"] = str(prompt_path.relative_to(job_dir))
             item["replacement_path"] = str(output.relative_to(job_dir))
@@ -89,6 +94,14 @@ def remix_images(job_dir: Path, concurrency: int = 3, config_path: Path | None =
                 item["status"] = "duplicate"
     write_json(job_dir / "image_manifest.json", manifest)
     _update_status(job_dir, "images_remixed")
+
+
+def _stabilize_image_replacement(source: Path, output: Path, item: dict) -> None:
+    quality = stabilize_transparent_replacement(source, output, item)
+    if quality.get("action") != "skipped":
+        item["quality"] = quality
+        if quality.get("action") in {"fallback", "normalized"}:
+            item["status_detail"] = f"transparent_asset_{quality['action']}"
 
 
 def _asset_cache_root(job_dir: Path) -> Path:
